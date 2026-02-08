@@ -47,6 +47,25 @@
   font-size: 14px;
 }
 
+.toolbox-error {
+  color: #ecf0f1;
+  padding: 15px;
+  background-color: #e74c3c;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.toolbox-error p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.toolbox-error .error-detail {
+  font-size: 12px;
+  opacity: 0.9;
+  font-family: monospace;
+}
+
 .tool-label {
   font-size: 16px;
   font-weight: 500;
