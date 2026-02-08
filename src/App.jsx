@@ -5,10 +5,11 @@ import './App.css'
 
 function App() {
   const [elements, setElements] = useState([])
+  const [nextId, setNextId] = useState(1)
 
   const addElement = (type) => {
     const newElement = {
-      id: Date.now(),
+      id: `element-${nextId}`,
       type: type,
       content: `New ${type}`,
       style: {
@@ -18,6 +19,7 @@ function App() {
       }
     }
     setElements([...elements, newElement])
+    setNextId(nextId + 1)
   }
 
   const updateElement = (id, updates) => {
