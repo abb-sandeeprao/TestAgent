@@ -4,11 +4,13 @@ A modern, interactive ReactJS editor application featuring a toolbox and an edit
 
 ## Features
 
-- **Toolbox Panel**: Contains draggable tools/elements
-  - 📝 Text - Add editable text fields
-  - 🔘 Button - Add interactive buttons
-  - 🖼️ Image - Add image placeholders
-  - 📦 Box - Add container boxes
+- **Dynamic Toolbox Panel**: Loaded from JSON configuration
+  - Text - Add editable text fields
+  - Button - Add interactive buttons
+  - Image - Add image placeholders
+  - Box - Add container boxes
+  - Icons loaded from SVG files
+  - Fully customizable via `public/palette-config.json`
 
 - **Editor Area**: Interactive canvas where you can:
   - Add elements by clicking tools in the toolbox
@@ -18,10 +20,33 @@ A modern, interactive ReactJS editor application featuring a toolbox and an edit
   - Visual feedback with grid background
   - Selection highlighting
 
+## Configuration
+
+The toolbox is dynamically populated from `public/palette-config.json`. You can customize the available tools by editing this file:
+
+```json
+{
+  "palette": [
+    {
+      "type": "text",
+      "label": "Text",
+      "icon": "/icons/text.svg",
+      "description": "Add text element"
+    }
+  ]
+}
+```
+
+Each tool requires:
+- `type`: Unique identifier for the element type
+- `label`: Display name in the toolbox
+- `icon`: Path to the icon file (SVG recommended)
+- `description`: Tooltip text (optional)
+
 ## Screenshots
 
-### Initial View
-![Initial View](https://github.com/user-attachments/assets/5cfdef5c-938c-4695-90a3-470378274552)
+### Dynamic Toolbox with Icon Images
+![Dynamic Toolbox](https://github.com/user-attachments/assets/d5fa143e-b1d9-41e3-ba1b-7f68ed82debe)
 
 ### With Elements
 ![With Elements](https://github.com/user-attachments/assets/add26c24-ab76-4917-b0b6-7b8a8c9fe490)
@@ -67,9 +92,16 @@ npm run preview
 
 ```
 TestAgent/
+├── public/
+│   ├── palette-config.json    # Toolbox configuration
+│   └── icons/                 # Icon files for tools
+│       ├── text.svg
+│       ├── button.svg
+│       ├── image.svg
+│       └── box.svg
 ├── src/
 │   ├── components/
-│   │   ├── Toolbox.jsx       # Toolbox component
+│   │   ├── Toolbox.jsx       # Dynamic toolbox component
 │   │   ├── Toolbox.css        # Toolbox styles
 │   │   ├── Editor.jsx         # Editor area component
 │   │   └── Editor.css         # Editor styles
