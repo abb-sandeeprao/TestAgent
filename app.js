@@ -1,6 +1,12 @@
 // Initialize FabricJS canvas
 let canvas;
 
+// Constants for shape positioning
+const RANDOM_POSITION_X_RANGE = 300;
+const RANDOM_POSITION_Y_RANGE = 200;
+const RANDOM_POSITION_X_OFFSET = 100;
+const RANDOM_POSITION_Y_OFFSET = 100;
+
 // Initialize the canvas when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Create FabricJS canvas
@@ -37,8 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
     addRectangleBtn.addEventListener('click', function() {
         const styles = getCurrentStyles();
         const rect = new fabric.Rect({
-            left: Math.random() * 300 + 100,
-            top: Math.random() * 200 + 100,
+            left: Math.random() * RANDOM_POSITION_X_RANGE + RANDOM_POSITION_X_OFFSET,
+            top: Math.random() * RANDOM_POSITION_Y_RANGE + RANDOM_POSITION_Y_OFFSET,
             width: 150,
             height: 100,
             fill: styles.fill,
@@ -54,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function() {
     addCircleBtn.addEventListener('click', function() {
         const styles = getCurrentStyles();
         const circle = new fabric.Circle({
-            left: Math.random() * 300 + 100,
-            top: Math.random() * 200 + 100,
+            left: Math.random() * RANDOM_POSITION_X_RANGE + RANDOM_POSITION_X_OFFSET,
+            top: Math.random() * RANDOM_POSITION_Y_RANGE + RANDOM_POSITION_Y_OFFSET,
             radius: 60,
             fill: styles.fill,
             stroke: styles.stroke,
@@ -70,8 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
     addTriangleBtn.addEventListener('click', function() {
         const styles = getCurrentStyles();
         const triangle = new fabric.Triangle({
-            left: Math.random() * 300 + 100,
-            top: Math.random() * 200 + 100,
+            left: Math.random() * RANDOM_POSITION_X_RANGE + RANDOM_POSITION_X_OFFSET,
+            top: Math.random() * RANDOM_POSITION_Y_RANGE + RANDOM_POSITION_Y_OFFSET,
             width: 120,
             height: 120,
             fill: styles.fill,
@@ -89,8 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const line = new fabric.Line(
             [50, 50, 200, 150],
             {
-                left: Math.random() * 300 + 100,
-                top: Math.random() * 200 + 100,
+                left: Math.random() * RANDOM_POSITION_X_RANGE + RANDOM_POSITION_X_OFFSET,
+                top: Math.random() * RANDOM_POSITION_Y_RANGE + RANDOM_POSITION_Y_OFFSET,
                 stroke: styles.stroke,
                 strokeWidth: styles.strokeWidth
             }
@@ -179,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (activeObject.stroke) {
                 strokeColorInput.value = activeObject.stroke;
             }
-            if (activeObject.strokeWidth) {
+            if ('strokeWidth' in activeObject) {
                 strokeWidthInput.value = activeObject.strokeWidth;
             }
         }
