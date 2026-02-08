@@ -209,12 +209,25 @@
         const strokeColorInput = document.getElementById('strokeColor');
         const strokeWidthInput = document.getElementById('strokeWidth');
 
+        // Helper function to download files
+        function downloadFile(content, mimeType, filename) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
         // Helper function to get current style settings
         function getCurrentStyles() {
             return {
                 fill: fillColorInput.value,
                 stroke: strokeColorInput.value,
-                strokeWidth: parseInt(strokeWidthInput.value)
+                strokeWidth: parseInt(strokeWidthInput.value, 10)
             };
         }
 
@@ -297,29 +310,13 @@
         // Export as SVG
         document.getElementById('exportSVG').addEventListener('click', () => {
             const svg = canvas.toSVG();
-            const blob = new Blob([svg], { type: 'image/svg+xml' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'canvas-export.svg';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            downloadFile(svg, 'image/svg+xml', 'canvas-export.svg');
         });
 
         // Export as JSON
         document.getElementById('exportJSON').addEventListener('click', () => {
             const json = JSON.stringify(canvas.toJSON(), null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'canvas-export.json';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            downloadFile(json, 'application/json', 'canvas-export.json');
         });
 
         // Update fill color for selected object when color changes
@@ -344,7 +341,7 @@
         strokeWidthInput.addEventListener('change', () => {
             const activeObject = canvas.getActiveObject();
             if (activeObject) {
-                activeObject.set('strokeWidth', parseInt(strokeWidthInput.value));
+                activeObject.set('strokeWidth', parseInt(strokeWidthInput.value, 10));
                 canvas.renderAll();
             }
         });
