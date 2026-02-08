@@ -1,0 +1,116 @@
+.editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  position: relative;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: #ecf0f1;
+  border-bottom: 2px solid #bdc3c7;
+}
+
+.editor-header h3 {
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.element-count {
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.editor-canvas {
+  flex: 1;
+  position: relative;
+  background-color: #ffffff;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.editor-element {
+  position: absolute;
+  padding: 10px;
+  background-color: white;
+  border: 2px solid #bdc3c7;
+  border-radius: 4px;
+  cursor: move;
+  user-select: none;
+  min-width: 100px;
+  transition: border-color 0.2s ease;
+}
+
+.editor-element:hover {
+  border-color: #3498db;
+}
+
+.editor-element.selected {
+  border-color: #2ecc71;
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+}
+
+.delete-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+.editor-element input {
+  border: 1px solid #ddd;
+  padding: 5px;
+  border-radius: 3px;
+  width: 100%;
+}
+
+.element-button {
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.image-placeholder {
+  width: 100px;
+  height: 100px;
+  background-color: #ecf0f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #7f8c8d;
+}
+
+.box-element {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border: 1px dashed #bdc3c7;
+  border-radius: 4px;
+  min-width: 150px;
+  min-height: 100px;
+}
