@@ -1,0 +1,28 @@
+{
+  "palette": [
+    {
+      "type": "text",
+      "label": "Text",
+      "icon": "/icons/text.svg",
+      "description": "Add text element"
+    },
+    {
+      "type": "button",
+      "label": "Button",
+      "icon": "/icons/button.svg",
+      "description": "Add button element"
+    },
+    {
+      "type": "image",
+      "label": "Image",
+      "icon": "/icons/image.svg",
+      "description": "Add image placeholder"
+    },
+    {
+      "type": "box",
+      "label": "Box",
+      "icon": "/icons/box.svg",
+      "description": "Add container box"
+    }
+  ]
+}
