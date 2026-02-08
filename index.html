@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FabricJS Drawing App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>FabricJS Drawing Application</h1>
+        
+        <div class="toolbar">
+            <h3>Add Shapes</h3>
+            <div class="button-group">
+                <button id="addRectangle" class="btn">Add Rectangle</button>
+                <button id="addCircle" class="btn">Add Circle</button>
+                <button id="addTriangle" class="btn">Add Triangle</button>
+                <button id="addLine" class="btn">Add Line</button>
+            </div>
+            
+            <h3>Canvas Actions</h3>
+            <div class="button-group">
+                <button id="deleteSelected" class="btn btn-danger">Delete Selected</button>
+                <button id="clearCanvas" class="btn btn-warning">Clear Canvas</button>
+                <button id="exportSVG" class="btn btn-success">Export as SVG</button>
+                <button id="exportJSON" class="btn btn-info">Export as JSON</button>
+            </div>
+            
+            <h3>Properties</h3>
+            <div class="property-group">
+                <label for="fillColor">Fill Color:</label>
+                <input type="color" id="fillColor" value="#3498db">
+                
+                <label for="strokeColor">Stroke Color:</label>
+                <input type="color" id="strokeColor" value="#2c3e50">
+                
+                <label for="strokeWidth">Stroke Width:</label>
+                <input type="number" id="strokeWidth" min="0" max="20" value="2">
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div id="output" class="output"></div>
+    </div>
+    
+    <script src="node_modules/fabric/dist/fabric.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
