@@ -102,11 +102,14 @@ class ApuxInput extends HTMLElement {
     // Forward events
     input.addEventListener('input', (e) => {
       this.setAttribute('value', e.target.value);
-      this.dispatchEvent(new CustomEvent('input', { detail: { value: e.target.value }, bubbles: true }));
+      // Dispatch both custom event and update the shadow input
+      const customEvent = new CustomEvent('input', { detail: { value: e.target.value }, bubbles: true });
+      this.dispatchEvent(customEvent);
     });
     
     input.addEventListener('change', (e) => {
-      this.dispatchEvent(new CustomEvent('change', { detail: { value: e.target.value }, bubbles: true }));
+      const customEvent = new CustomEvent('change', { detail: { value: e.target.value }, bubbles: true });
+      this.dispatchEvent(customEvent);
     });
     
     shadow.appendChild(input);

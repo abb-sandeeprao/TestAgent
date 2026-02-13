@@ -7,7 +7,10 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
   const handleMouseDown = (e, id) => {
-    if (e.target.classList.contains('delete-btn') || e.target.tagName === 'APUX-BUTTON') return
+    // Prevent dragging if clicking on delete button or any button within the element
+    if (e.target.closest('.delete-btn') || (e.target.tagName === 'APUX-BUTTON' && e.target.classList.contains('delete-btn'))) {
+      return
+    }
     
     const element = elements.find(el => el.id === id)
     if (!element) return
@@ -47,8 +50,11 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
   }
 
   const handleInputChange = (e, id) => {
-    const newContent = e.target.value
-    onUpdateElement(id, { content: newContent })
+    // Support both synthetic events (e.target.value) and custom events (e.detail.value)
+    const newContent = e.target.value !== undefined ? e.target.value : e.detail?.value
+    if (newContent !== undefined) {
+      onUpdateElement(id, { content: newContent })
+    }
   }
 
   const renderElement = (element) => {
