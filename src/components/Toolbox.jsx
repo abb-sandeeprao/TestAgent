@@ -30,7 +30,10 @@ const Toolbox = ({ onAddElement }) => {
     return (
       <div className="toolbox">
         <h3>Toolbox</h3>
-        <div className="toolbox-loading">Loading...</div>
+        <div className="toolbox-loading">
+          <apux-spinner-loader size="medium" variant="default"></apux-spinner-loader>
+          <span>Loading...</span>
+        </div>
       </div>
     )
   }
@@ -52,9 +55,10 @@ const Toolbox = ({ onAddElement }) => {
       <h3>Toolbox</h3>
       <div className="tool-list">
         {tools.map(tool => (
-          <div 
+          <apux-button
             key={tool.type}
             className="tool-item"
+            variant="ghost"
             onClick={() => onAddElement(tool.type)}
             title={tool.description}
           >
@@ -64,7 +68,7 @@ const Toolbox = ({ onAddElement }) => {
               className="tool-icon" 
             />
             <span className="tool-label">{tool.label}</span>
-          </div>
+          </apux-button>
         ))}
       </div>
     </div>

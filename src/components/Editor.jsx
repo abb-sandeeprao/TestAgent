@@ -7,7 +7,10 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
   const handleMouseDown = (e, id) => {
-    if (e.target.classList.contains('delete-btn')) return
+    // Prevent dragging if clicking on delete button or any button within the element
+    if (e.target.closest('.delete-btn') || (e.target.tagName === 'APUX-BUTTON' && e.target.classList.contains('delete-btn'))) {
+      return
+    }
     
     const element = elements.find(el => el.id === id)
     if (!element) return
@@ -46,6 +49,14 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
     onUpdateElement(id, { content: newContent })
   }
 
+  const handleInputChange = (e, id) => {
+    // Support both synthetic events (e.target.value) and custom events (e.detail.value)
+    const newContent = e.target.value !== undefined ? e.target.value : e.detail?.value
+    if (newContent !== undefined) {
+      onUpdateElement(id, { content: newContent })
+    }
+  }
+
   const renderElement = (element) => {
     const isSelected = selectedId === element.id
 
@@ -56,22 +67,26 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
         style={element.style}
         onMouseDown={(e) => handleMouseDown(e, element.id)}
       >
-        <button 
+        <apux-button 
           className="delete-btn"
+          variant="ghost"
+          size="extra-small"
           onClick={() => onDeleteElement(element.id)}
         >
           ×
-        </button>
+        </apux-button>
         {element.type === 'text' && (
-          <input
+          <apux-input
             type="text"
             value={element.content}
-            onChange={(e) => handleContentChange(element.id, e.target.value)}
+            onInput={(e) => handleInputChange(e, element.id)}
             onClick={(e) => e.stopPropagation()}
           />
         )}
         {element.type === 'button' && (
-          <button className="element-button">{element.content}</button>
+          <apux-button variant="primary" size="medium">
+            {element.content}
+          </apux-button>
         )}
         {element.type === 'image' && (
           <div className="image-placeholder">{element.content}</div>

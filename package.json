@@ -28,5 +28,8 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.3",
     "vite": "^7.3.1"
+  },
+  "comments": {
+    "apux": "The application uses @abb-hmi/apux@0.11.0-alpha.15 (loaded via script tag in index.html). Currently using mock implementation at /public/apux-mock.js. See APUX_INTEGRATION.md for setup instructions."
   }
 }
