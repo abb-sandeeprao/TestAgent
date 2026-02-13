@@ -1,0 +1,7 @@
+@use "@abb-hmi/apux/spacing" as *;
+.tooltip-context {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $space * 3;
+}

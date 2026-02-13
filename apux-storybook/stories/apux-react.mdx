@@ -1,0 +1,68 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="APUX React JSX Integration" />
+
+# Using Apux react with React and TypeScript
+
+The `@abb-hmi/apux-jsx` package provides JSX typings and definitions for apux web components in your React projects. It ensures proper TypeScript support and autocompletion when using these custom elements.
+
+## How It Works
+
+The package exports TypeScript definitions for all apux components. By including these definitions in your React project, TypeScript recognizes them as valid intrinsic JSX elements, eliminating errors like:
+
+Property 'apux-accordion' does not exist on type 'JSX.IntrinsicElements
+
+## Setup Instructions
+
+1.  **Install the package:**
+
+        ```bash
+        yarn add --dev @abb-hmi/apux-jsx
+        ```
+
+2.  Include a global reference in your project’s `.d.ts` file:
+
+        ```ts
+        /// <reference types="@abb-hmi/apux-jsx" />
+        ```
+
+        (Optional) You can also include other types (like the global ones from `@abb-hmi/apux`) by adding:
+
+        ```ts
+        /// <reference types="@abb-hmi/apux/globals" />
+        ```
+
+        This ensures complete typing support for the ABB HMI custom elements.
+
+        > **Note:**
+        >  When widgets are generated using widget sdk, these references will be added
+        > automatically for you, no manual setup needed.
+
+## Short Example
+
+Here’s a minimal React component using `<apux-avatar>` and `<apux-button>`:
+
+> **Note:**
+> The class attribute is supported for styling Apux components, ensuring proper rendering of CSS classes in the HTML output.
+
+```tsx
+import React from "react";
+
+const MyComponent = () => {
+  return (
+    <section>
+      <apux-avatar
+        src="avatar.png"
+        size="medium"
+        name="Jane Doe"
+        class="my-avatar"
+      />
+      <apux-button variant="primary" size="small" class="my-button">
+        Click Me
+      </apux-button>
+    </section>
+  );
+};
+
+export default MyComponent;
+```

@@ -1,0 +1,15 @@
+@use "@abb-hmi/apux/spacing" as *;
+
+.online {
+  width: 300px;
+  display: block;
+  position: relative;
+  &::after {
+    position: absolute;
+    content: "";
+    background: limegreen;
+    height: 100%;
+    width: $space;
+    right: 0;
+  }
+}

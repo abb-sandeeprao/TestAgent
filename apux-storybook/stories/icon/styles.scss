@@ -1,0 +1,12 @@
+@use "@abb-hmi/apux/spacing" as *;
+
+.icon-table {
+  display: flex;
+  flex-wrap: wrap;
+  margin: $space;
+  justify-content: flex-start;
+  &__icon {
+    flex: 0 1 100px;
+    text-align: center;
+  }
+}

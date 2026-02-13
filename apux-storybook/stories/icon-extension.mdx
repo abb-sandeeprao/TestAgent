@@ -1,0 +1,82 @@
+import { Meta } from "@storybook/addon-docs";
+
+<Meta
+  title="Icon extension"
+  parameters={{
+    viewMode: "docs",
+    previewTabs: {
+      canvas: { hidden: true },
+    },
+  }}
+/>
+
+# A tool to convert SVG icons to a format compatible with ABB HMI application.
+
+Add apux icon extension
+
+```bash
+yarn add @abb-hmi/apux-icon-extension --dev
+```
+
+To check options
+
+```bash
+ yarn apux-icon-extension --help
+```
+
+Example of usage:
+
+```bash
+apux-icon-extension export -p svg-icons/ \
+  -m components/icon/icons-paths-map.ts \
+  -t types/generated-icon-name.ts
+  -c my-project
+```
+
+- `svg-icons/` - path of folder contains svg files.
+
+- `components/icon/icons-paths-map.ts` - output path of file contains icon map creating by tool.
+
+- `types/generated-icon-name.ts` - output path of file contains icon names creating by tool.
+
+- `my-project` - replace this with your product or category name, for example: `isa-95`.
+
+**Important:** the folder (`svg-icons/` in example above) should contain the SVG files, where every SVG file have to contain **one and only one \<path>**. The name of the SVG file will be used as the name of the icon in the map and in the generated types, it is required that the file name is in `kebab-case` format. The generated types will be used in the `apux-icon` component.
+
+Example of SVG file compatible:
+
+```ts
+<svg
+  width="16" // ignored
+  height="16" // ignored
+  viewBox="0 0 16 16" // ignored
+  fill="none" // ignored
+  xmlns="http://www.w3.org/2000/svg" // ignored
+>
+  <path
+    d="M9.26 ..." // required
+    fill="#0F0F0F" // ignored
+    other-prop // kept (optional)
+  />
+</svg>
+```
+
+The svg attributes `fill` and `class` are ignored. Other properties of the `path` are kept.
+
+## Types
+
+As seen in the example above, the script generated a `.ts` file which contains the valid types for the icon names you can use in your project. The generated file will look like this:
+
+```ts
+export default ["string1", "string2", "string3"] as const;
+
+declare module "@abb-hmi/apux/types" {
+  interface IconNames {
+    string1: never;
+    string2: never;
+    string3: never;
+  }
+}
+```
+
+This type can be used to validate the icon names in your project or to enhance type assistance in your IDE. Add this file to your `tsconfig.json` in `compilerOptions.types`. In case of using this in multiple projects, publish this file as a npm package and add it to your project as a dependency. This way you can use the same icon names in all your projects.

@@ -1,0 +1,121 @@
+import { Meta } from "@storybook/addon-docs";
+
+<Meta
+  title="Introduction"
+  parameters={{
+    viewMode: "docs",
+    previewTabs: {
+      canvas: { hidden: true },
+    },
+  }}
+/>
+
+# APUX
+
+> The only true canonical UI/UX Library for the whole PCP.
+
+The purpose of this library is to provide developers a set of UI elements
+to quickly deliver content for the PCP projects.
+
+APUX is the official name of the library, and it stands for **A**BB **P**CP **UX**.
+
+APUX is pronounced as `/āpəks/`, like the English words **ape** and the ending of **influx**.
+It can be spelled in both upper and lower case (Apux, APUX, apux).
+
+## Basic Usage
+
+APUX is a global library, it registers custom elements in the `customElements` registry,
+and expose class constructors as globals in the `window` (or `globalThis`).
+
+It uses CSS variables to allow theming, and they are declared in the `:root`.
+
+Load `apux.umd.js` in your website (bundled in `@abb-hmi/apux` as the `main` module),
+blocking render is recommended.
+
+```html
+<link id="apux-style" rel="stylesheet" href="[some-path]/apux.css" />
+<script src="[some-path]/apux.umd.js"></script>
+```
+
+This will register the custom elements and set the global constructors that APUX provides.
+
+**Note:** `id="apux-style"` is a required, APUX components search for this style and adopt it internally.
+
+## Developing in TypeScript
+
+To enable documentation, type verification, auto-complete features,
+it is possible to load all global types and constructors.
+
+Import only globals, for example, in a file called `src/types.d.ts` add:
+
+```ts
+/// <reference types="@abb-hmi/apux/globals" />
+```
+
+or in `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "types": ["@abb-hmi/apux/globals"]
+  }
+}
+```
+
+Importing globals will improve the usability of `createElement`,
+`instanceof`, `querySelector`, `addEventListener` and similar for APUX elements.
+
+To import additional types, which are not global, for example configuration parameters, use:
+
+```ts
+import type { ... } from "@abb-hmi/apux"
+```
+
+**Note:** Always use `import type` for importing APUX.
+
+## APUX Toolkit
+
+Import some extra tooling, that has been proven useful for developing content using plain JS,
+this is a collection of tools used to develop APUX itself,
+but may have some value for other projects like in the Common HMI and its widgets.
+
+```ts
+import { ... } from "@abb-hmi/apux/toolkit"
+```
+
+## APUX Types
+
+Some additional types related to the `type` property and similar of the elements are exposed in this module,
+example:
+
+```ts
+// Use `type` to only import types, and avoid bigger bundle sizes.
+import type { IconName, IconSize } from "@abb-hmi/apux";
+// or import values if it is absolutely needed.
+import { iconNames } from "@abb-hmi/apux";
+```
+
+## ES Modules
+
+Enable in TypeScript:
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "NodeNext" // or Node16
+  }
+}
+```
+
+Ensure that Vite or WebPack are reading ESM instead of Common JS.
+
+It is recommended to use a test runner with support for ESM.
+
+## CSS in JS
+
+Some developers prefer libraries like styled-components and emotion over SASS.
+In this case, the `space` variable can be imported as:
+
+```ts
+import { space, spaceSextuple } from "@abb-hmi/apux/css-in-js";
+```

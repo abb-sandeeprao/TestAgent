@@ -1,0 +1,53 @@
+{
+  "name": "@abb-hmi/apux-storybook",
+  "version": "0.11.0-alpha.19",
+  "private": true,
+  "description": "Storybook for APUX",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@storybook/addon-actions": "^8.6.11",
+    "@storybook/addon-docs": "^8.6.11",
+    "@storybook/addon-essentials": "^8.6.11",
+    "@storybook/addon-interactions": "^8.6.11",
+    "@storybook/addon-links": "^8.6.11",
+    "@storybook/addon-mdx-gfm": "^8.6.11",
+    "@storybook/addon-storysource": "^8.6.11",
+    "@storybook/addons": "7.6.17",
+    "@storybook/api": "7.6.17",
+    "@storybook/blocks": "^8.6.11",
+    "@storybook/client-api": "7.6.17",
+    "@storybook/html": "^8.6.11",
+    "@storybook/test": "^8.6.11",
+    "@storybook/testing-library": "^0.2.2",
+    "@storybook/theming": "^8.6.11",
+    "@storybook/web-components": "^8.6.11",
+    "@storybook/web-components-vite": "^8.6.11",
+    "lit": "^3.2.1",
+    "lit-html": "^3.2.1",
+    "storybook": "^8.6.11",
+    "storybook-dark-mode": "^4.0.2",
+    "vite": "^7.3.0"
+  },
+  "dependencies": {
+    "@abb-hmi/apux": "workspace:^"
+  },
+  "nx": {
+    "targets": {
+      "storybook": {
+        "dependsOn": [
+          "^build:icons-map"
+        ]
+      }
+    }
+  }
+}

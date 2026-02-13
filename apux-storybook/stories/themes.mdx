@@ -1,0 +1,44 @@
+import { Meta } from "@storybook/addon-docs";
+
+<Meta
+  title="Themes"
+  parameters={{
+    viewMode: "docs",
+    previewTabs: {
+      canvas: { hidden: true },
+    },
+  }}
+/>
+
+Themes allow to change the colors of all components in a consistent way.
+An APUX theme is a set of CSS variables with semantic meaning. A theme is contained in a class which is used but not limited to the `body` element.
+
+Basic example (`my-theme.css`):
+
+```css
+.my-theme {
+  --apux-border-default: #525252;
+  --apux-border-default-disabled: #525252;
+  --apux-border-default-hover: #696969;
+  --apux-border-default-active: #bababa;
+}
+```
+
+All themes extend from the default theme, therefore, it is only needed to replace the variables that are different from the default theme.
+
+APUX includes a theme called "darkness" (`apux-darkness`) which is a dark theme. It can also be used as a base for custom themes,
+in this the class name should be added to the body in addition to your theme.
+
+```html
+<html>
+  <head>
+    <link id="apux-style" rel="stylesheet" href="apux.css" />
+    <link rel="stylesheet" href="my-theme.css" />
+  </head>
+  <body class="apux-darkness my-theme">
+    <script src="apux.umd.js"></script>
+  </body>
+</html>
+```
+
+It is essential that the `<link>` to the theme is loaded after the `<link>` to the APUX CSS file.

@@ -1,0 +1,266 @@
+import { Meta } from "@storybook/addon-docs";
+
+<Meta
+  title="Colors"
+  parameters={{
+    viewMode: "docs",
+    previewTabs: {
+      canvas: { hidden: true },
+    },
+  }}
+/>
+
+export const computedStyles = getComputedStyle(document.body);
+
+export function ColorSample({ color }) {
+  const fullColorName = `--apux-${color}`;
+  return (
+    <div
+      style={{
+        border: "var(--apux-border-default) solid 1px",
+        borderRadius: "0.5rem",
+        overflow: "hidden",
+        width: "260px",
+        display: "inline-block",
+        marginRight: "1rem",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: `var(${fullColorName})`,
+          height: "80px",
+          width: "100%",
+        }}
+      ></div>
+      <div style={{ fontFamily: "monospace" }}>{fullColorName}</div>
+      <div
+        style={{
+          fontSize: "0.6em",
+          color: "var(--apux-foreground-secondary)",
+          padding: "0.5rem",
+          // position: "absolute",
+          bottom: "0.5rem",
+        }}
+      >
+        {computedStyles.getPropertyValue(fullColorName)}
+      </div>
+    </div>
+  );
+}
+
+export function ColorSampleTyped({ type, color }) {
+  const partialName = color ? `${type}-${color}` : type;
+  return <ColorSample color={partialName} />;
+}
+
+export function Section({ children }) {
+  return <div style={{ display: "flex" }}>{children}</div>;
+}
+
+export const elementStates = ["", "disabled", "hover", "active"];
+export const foregroundElementStates = ["", "disabled", "hover"];
+export const stateTypes = ["", "secondary"];
+
+# Colors
+
+APUX colors should always be used as CSS variables, so that they can be easily customized via theming. Avoid using any hardcoded colors in your CSS, and always use the variables provided in this document.
+
+The usage of these colors is based on the semantics of the elements they are used on, and not on the specific color they represent. This means that the same color may be used in different contexts, and different colors may be used in the same context, depending on the semantics of the element. Designers and developers should always use the colors that best represent the semantics of the element they are working on, and never use colors merely for aesthetic reasons.
+
+## Background:
+
+These are the general background colors, used for the main background of the page, and for the background of cards and other elements that behave like blank canvas.
+
+<Section>
+  {["background-default", "background-alternative"].map((x) => (
+    <ColorSample color={x} />
+  ))}
+</Section>
+
+## Borders:
+
+All elements that have a border should use these colors, additionally, separators and other elements that are used to divide content should use these colors.
+
+### Default
+
+<Section>
+  {elementStates.map((x) => (
+    <ColorSampleTyped type="border-default" color={x} />
+  ))}
+</Section>
+
+## Fill
+
+These colors are used to fill elements, like buttons, and other elements that have a highlighted background.
+
+### Primary
+
+Used for primary actions, such as confirming an action, or submitting a form or a dialog.
+
+<Section>
+  {elementStates.map((x) => (
+    <ColorSampleTyped type="fill-primary" color={x} />
+  ))}
+</Section>
+
+### Secondary
+
+Used for secondary actions, such as cancel buttons, and other elements that are not meant to be the main user interaction.
+
+<Section>
+  {elementStates.map((x) => (
+    <ColorSampleTyped type="fill-secondary" color={x} />
+  ))}
+</Section>
+
+### Tertiary
+
+Used for tertiary actions, such as very optional user interactions which aren't meant to get the user's attention.
+
+<Section>
+  {elementStates.map((x) => (
+    <ColorSampleTyped type="fill-tertiary" color={x} />
+  ))}
+</Section>
+
+### Select
+
+Used exclusively for selecting elements which are mainly distinguished by their background color, such as toggle buttons.
+
+<Section>
+  {elementStates.map((x) => (
+    <ColorSampleTyped type="fill-tertiary" color={x} />
+  ))}
+</Section>
+
+### Base
+
+Used for textual elements or elements where the user may drop files or other content. Despite being identical to the alternative background color, it's used in a different context, thus it is not interchangeable.
+
+<Section>
+  <ColorSample color="fill-base" />
+</Section>
+
+## Foreground
+
+These colors are designed for the text and icons that are placed on top of the background colors.
+
+### Primary
+
+The main color used on top of the background colors or secondary elements.
+
+<Section>
+  {foregroundElementStates.map((x) => (
+    <ColorSampleTyped type="foreground-primary" color={x} />
+  ))}
+</Section>
+
+### Secondary
+
+Text that is used to give extra information, such as placeholder and optionally readable descriptions.
+
+<Section>
+  {foregroundElementStates.map((x) => (
+    <ColorSampleTyped type="foreground-secondary" color={x} />
+  ))}
+</Section>
+
+### Inverted
+
+Used for text that is placed on top of the accent colors, primary filling, to ensure readability.
+
+<Section>
+  {foregroundElementStates.map((x) => (
+    <ColorSampleTyped type="foreground-inverted" color={x} />
+  ))}
+</Section>
+
+## States
+
+Represent the state of an operation, alarm or other status that needs to be communicated to the user.
+All states have a default and a secondary version, where the secondary version is used mainly for filling.
+
+### Success
+
+Indicates that an operation was successful, or that the system is in a good state.
+
+<Section>
+  {stateTypes.map((x) => (
+    <ColorSampleTyped type="state-success" color={x} />
+  ))}
+</Section>
+
+### Warning
+
+Indicates that an operation was successful, however, the user should be aware of some side effect or potential problem.
+
+<Section>
+  {stateTypes.map((x) => (
+    <ColorSampleTyped type="state-warning" color={x} />
+  ))}
+</Section>
+
+### Info
+
+Indicates that the user should be aware of some information, such as a new feature, or a new version of the system.
+
+<Section>
+  {stateTypes.map((x) => (
+    <ColorSampleTyped type="state-info" color={x} />
+  ))}
+</Section>
+
+### Error
+
+Indicates that an operation failed, or that the system is in a bad state, creating a major discomfort for the user.
+
+<Section>
+  {stateTypes.map((x) => (
+    <ColorSampleTyped type="state-error" color={x} />
+  ))}
+</Section>
+
+## Popper shadow
+
+Some elements that are displayed on top of the content should have a shadow to indicate that they are floating above the content.
+
+<Section>
+  <ColorSample color="popper-shadow" />
+</Section>
+
+## Focus elements
+
+Elements which are focused have an outline to facilitate the user's understanding of the position of the user interaction via keyboard navigation (tab, arrows,...).
+This is semantically speaking very close to selection, and yet it is important to keep them separate, as the nature of the focus is very ephemeral and should not be confused with a selection which is a state of the application.
+
+<Section>
+  <ColorSample color="focus" />
+</Section>
+
+## Scrollbar thumb
+
+All scrollbars should have a thumb that is visible and easy to grab, this color is used for the thumb of the scrollbar.
+
+<Section>
+  {["scrollbar-thumb", "scrollbar-thumb-hover"].map((x) => (
+    <ColorSample color={x} />
+  ))}
+</Section>
+
+## Links
+
+Used for links that navigate to other pages, or other sections of the same page.
+
+<Section>
+  {["link", "link-hover", "link-active"].map((x) => (
+    <ColorSample color={x} />
+  ))}
+</Section>
+
+## Brand
+
+Used for branding elements, such as logos and other company's brand elements.
+
+<Section>
+  <ColorSample color="brand" />
+</Section>

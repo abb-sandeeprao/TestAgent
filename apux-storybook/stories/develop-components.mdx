@@ -1,0 +1,207 @@
+import { Meta } from "@storybook/addon-docs";
+
+<Meta
+  title="Develop components"
+  parameters={{
+    viewMode: "docs",
+    previewTabs: {
+      canvas: { hidden: true },
+    },
+  }}
+/>
+
+# Creating APUX-like libraries and web components
+
+Import the base components of APUX:
+
+```ts
+import { BaseComponent, component, attr } from "@abb-hmi/apux/base";
+```
+
+## Basic blocks
+
+- `BaseComponent` is the base class of all APUX components,
+  it provides `attribute → property` bindings based on the configuration:
+
+  ```ts
+  export class CompoToggle extends BaseComponent {
+    @attr({ type: "boolean" })
+    checked = false;
+  }
+  ```
+
+  or:
+
+  ```ts
+  export class CompoToggle extends BaseComponent {
+    static attributesConfig: AttributeConfigurations = {
+      checked: { type: "boolean", name: "checked" },
+    };
+    checked = false;
+  }
+  ```
+
+  Both examples will result into the following assertion:
+
+  ```ts
+  const toggle = new CompoToggle();
+  toggle.setAttribute("toggle", "");
+  expect(toggle.checked).toBeTrue();
+  ```
+
+  The usage of decorators is preferred, because it provides type safety
+  (matching the attribute/property types and allowing undefined, check `allowUndefined`).
+
+- `@attr` is a field decorator to create the binding between properties and their attributes.
+  By default, the `@attr` expects a non-nullable string with a default value.
+
+  Examples:
+
+  ```ts
+  export class CompoToggle extends BaseComponent {
+    // required string value (attr -> prop)
+    @attr
+    clan = "mckenzie";
+
+    // optional string value (attr -> prop)
+    @attr({ type: "string", allowUndefined: true })
+    parent: string | undefined;
+
+    // required string value (attr <-> prop)
+    @attr({ type: "string", reflect: true })
+    name = "";
+
+    // required boolean value (attr <-> prop)
+    @attr({ type: "boolean", reflect: true })
+    disabled = false;
+
+    // required boolean value (attr <-> prop)
+    // binds the attribute "numeric-index" instead of the default "index"
+    @attr({ type: "number", name: "numeric-index", reflect: true })
+    index = 0;
+  }
+  ```
+
+  Properties of the `@attr` decorator:
+
+  - `allowUndefined`: allows the field to be undefined (should type match).
+  - `name`: allows to choose a different name for the attribute.
+  - `reflect`: By default, changes in an attribute modify the property;
+    if changes in the property should update the attribute, this option
+    should be enabled. Recommended rules:
+    - state fields like `checked` should not reflect, `value` as state
+      (for example in text input) shouldn't as well. However, `value` as a
+      configuration/attribute in the checkbox should reflect.
+    - configuration that allows a component to styled should be reflected, examples:
+      `disabled`, `multiple`, ...
+
+- `@component` completes the `BaseComponent`, it enables `property → attribute`,
+  default values of properties, and initialization of default attributes.
+
+  Usage:
+
+  ```ts
+  @component
+  export class CompoToggle extends BaseComponent {
+    @attr
+    clan = "mckenzie";
+  }
+  ```
+
+**Note:** `BaseComponent` and `@component` are absolutely required. Each apux alike
+component has the following sandwich architecture:
+
+```
+╓────────────────────────╖
+║       @component       ║
+╙─╥────────────────────╥─╜
+  ║  <your component>  ║
+╓─╨────────────────────╨─╖
+║      BaseComponent     ║
+╙────────────────────────╜
+
+```
+
+## Magic events
+
+The following methods are auto-magically called:
+
+- `...Changed` is called when the attribute was changed to a new value.
+  Setting a new value via `setAttribute` or `removeAttribute` will always call
+  this method after the update. But changing a property won't call this
+  method unless it has `reflect` enabled and the value is different.
+
+- `...WasSet` is always called when the property value was set with a new value.
+
+Examples:
+
+```ts
+@component
+export class CompoToggle extends BaseComponent {
+  @attr
+  clan = "mckenzie";
+  clanWasSet() {
+    console.log("clan property was set", this.clan);
+  }
+  clanChanged(attrValue) {
+    console.log("clan attribute changed", attrValue, this.clan);
+  }
+}
+```
+
+## Defaults
+
+When a component is attached to a document (not on construct time),
+some attributes can be initialized by setting the static property `config`.
+
+Example:
+
+```ts
+@component
+export class ApuxRadio extends BaseComponent {
+  static config?: BaseComponentConfig = {
+    defaults: { attributes: { role: "radio" } },
+  };
+}
+```
+
+This will add the attribute `role` to the element automatically:
+
+```html
+<apux-radio role="radio"></apux-radio>
+```
+
+## Styles
+
+Import the styles as inlined CSS and add them to the static property `styles`.
+These styles may override the defaults of the APUX styles.
+
+Example using vite:
+
+```ts
+import styles from "./checkbox.scss?inline";
+
+@component
+export class ApuxCheckbox extends BaseComponent {
+  static styles = [styles];
+}
+```
+
+## `internals` field
+
+It is recommended to keep internal references to sub-elements of a component
+in the field `internals`, example:
+
+```ts
+@component
+export class ApuxToggle extends BaseComponent {
+  readonly internals = {
+    icon: document.createElement("apux-icon"),
+    button: document.createElement("button"),
+    proxy: document.createElement("input"),
+  };
+}
+```
+
+The value of this property will be automatically frozen, and the property will
+be configured as read-only and non-configurable on runtime.
