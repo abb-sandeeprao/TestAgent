@@ -7,7 +7,7 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
   const handleMouseDown = (e, id) => {
-    if (e.target.classList.contains('delete-btn')) return
+    if (e.target.classList.contains('delete-btn') || e.target.tagName === 'APUX-BUTTON') return
     
     const element = elements.find(el => el.id === id)
     if (!element) return
@@ -46,6 +46,11 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
     onUpdateElement(id, { content: newContent })
   }
 
+  const handleInputChange = (e, id) => {
+    const newContent = e.target.value
+    onUpdateElement(id, { content: newContent })
+  }
+
   const renderElement = (element) => {
     const isSelected = selectedId === element.id
 
@@ -56,22 +61,26 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
         style={element.style}
         onMouseDown={(e) => handleMouseDown(e, element.id)}
       >
-        <button 
+        <apux-button 
           className="delete-btn"
+          variant="ghost"
+          size="extra-small"
           onClick={() => onDeleteElement(element.id)}
         >
           ×
-        </button>
+        </apux-button>
         {element.type === 'text' && (
-          <input
+          <apux-input
             type="text"
             value={element.content}
-            onChange={(e) => handleContentChange(element.id, e.target.value)}
+            onInput={(e) => handleInputChange(e, element.id)}
             onClick={(e) => e.stopPropagation()}
           />
         )}
         {element.type === 'button' && (
-          <button className="element-button">{element.content}</button>
+          <apux-button variant="primary" size="medium">
+            {element.content}
+          </apux-button>
         )}
         {element.type === 'image' && (
           <div className="image-placeholder">{element.content}</div>
