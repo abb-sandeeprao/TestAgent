@@ -1,0 +1,11 @@
+{
+	"version": 1,
+	"hooks": {
+		"UserPromptSubmit": [
+			{
+				"type": "command",
+				"windows": "powershell -NoProfile -Command \"$raw=[Console]::In.ReadToEnd(); $prompt=''; try { $obj=$raw | ConvertFrom-Json -Depth 20; if ($obj.prompt) { $prompt=[string]$obj.prompt } elseif ($obj.userPrompt -and $obj.userPrompt.text) { $prompt=[string]$obj.userPrompt.text } elseif ($obj.message) { $prompt=[string]$obj.message } } catch {}; if ([string]::IsNullOrWhiteSpace($prompt)) { $prompt='<no-prompt-in-event-payload>' }; Add-Content -Path (Join-Path $env:TEMP 'agent-results.txt') -Value $prompt\""
+			}
+		]
+	}
+}
