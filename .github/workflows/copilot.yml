@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 22 # Copilot CLI requires Node.js 22+
 
-      - name: Install Copilot CLI
+      - name: Install Copilot CLI 
         run: npm i -g @github/copilot
 
       - name: Run Copilot Command
