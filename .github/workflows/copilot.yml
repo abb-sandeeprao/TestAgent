@@ -29,5 +29,5 @@ jobs:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN || github.token }}
         run: |
           copilot \
-            -p "Use the review-doc-organizer  agent and perform a code review." \
+            -p "Use the review-doc-organizer  agent and perform a code review and use pr-change-summary skill to provide a summary of the code for human review." \
             -s --no-ask-user
