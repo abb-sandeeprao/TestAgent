@@ -20,8 +20,8 @@ jobs:
 
       - name: Run Copilot Command
         env:
-          # Inject your PAT into the CLI environment
-          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }} 
+          # Use PAT if available, otherwise fall back to the built-in GITHUB_TOKEN
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN || github.token }}
         run: |
           copilot --model gpt-4 \
             -p "Use the review-doc-organizer  agent and perform a code review." \
