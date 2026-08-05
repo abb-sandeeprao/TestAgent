@@ -11,17 +11,17 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6 
         with:
           node-version: 22 # Copilot CLI requires Node.js 22+
 
-      - name: Install Copilot CLI
+      - name: Install Copilot CLI  
         run: npm i -g @github/copilot
 
       - name: Run Copilot Command
         env:
-          # Inject your PAT into the CLI environment
-          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }} 
+          # Use PAT if available, otherwise fall back to the built-in GITHUB_TOKEN
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN || github.token }}
         run: |
           copilot --model gpt-4o \
             -p "Use the review-doc-organizer  agent and perform a code review." \
