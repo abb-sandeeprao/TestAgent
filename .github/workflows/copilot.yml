@@ -29,5 +29,13 @@ jobs:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN || github.token }}
         run: |
           copilot \
-            -p "Use the review-doc-organizer  agent and perform a code review." \
-            -s --no-ask-user
+            -p "Use the review-doc-organizer  agent and perform a code review and use pr-change-summary skill to provide a summary of the code for human review." \
+            -s --no-ask-user > copilot-output.txt
+        
+      - name: Post Comment to PR
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            PR_NUMBER: ${{ github.event.pull_request.number }}
+          run: |
+            # Option 1: If your comment is saved in a text file
+            gh pr comment $PR_NUMBER --body-file "copilot-output.txt"
