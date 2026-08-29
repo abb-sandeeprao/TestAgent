@@ -66,13 +66,29 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
-          gh pr comment "$PR_NUMBER" --body-file="copilot-review.md"
+          COMMENT_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '[.[] | select(.body | startswith("## 🤖 Copilot AI Code Review"))] | last | .id')
+
+          if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "null" ]; then
+            gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -f body=@copilot-review.md
+          else
+            gh pr comment "$PR_NUMBER" --body-file="copilot-review.md"
+          fi
 
       - name: Post Summary Comment
         if: ${{ github.event_name == 'pull_request' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
-          gh pr comment "$PR_NUMBER" --body-file="copilot-summary.md"
+          COMMENT_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '[.[] | select(.body | startswith("## 📝 Copilot AI Change Summary"))] | last | .id')
+
+          if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "null" ]; then
+            gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -f body=@copilot-summary.md
+          else
+            gh pr comment "$PR_NUMBER" --body-file="copilot-summary.md"
+          fi
