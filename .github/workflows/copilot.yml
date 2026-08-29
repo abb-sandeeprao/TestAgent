@@ -72,7 +72,7 @@ jobs:
             --jq '[.[] | select(.body | startswith("## 🤖 Copilot AI Code Review"))] | last | .id')
 
           if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "null" ]; then
-            gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -f body=@copilot-review.md
+            gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -F body=@copilot-review.md
           else
             gh pr comment "$PR_NUMBER" --body-file="copilot-review.md"
           fi
@@ -88,7 +88,8 @@ jobs:
             --jq '[.[] | select(.body | startswith("## 📝 Copilot AI Change Summary"))] | last | .id')
 
           if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "null" ]; then
-            gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -f body=@copilot-summary.md
+            gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -F body=@copilot-summary.md
           else
             gh pr comment "$PR_NUMBER" --body-file="copilot-summary.md"
           fi
+
