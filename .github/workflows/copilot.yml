@@ -40,7 +40,9 @@ jobs:
           echo "## 🤖 Copilot AI Code Review" > copilot-review.md
           echo "" >> copilot-review.md
 
-          REVIEW_INSTRUCTIONS=$(cat .github/review.md)
+          BASE_REF="${{ github.base_ref }}"
+          BASE_REF="${BASE_REF:-main}"
+          REVIEW_INSTRUCTIONS=$(git show "origin/$BASE_REF:.github/review.md")
 
           copilot \
             --model gpt-5.6-luna \
@@ -92,5 +94,6 @@ jobs:
           else
             gh pr comment "$PR_NUMBER" --body-file="copilot-summary.md"
           fi
+
 
 
