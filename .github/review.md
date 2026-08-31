@@ -32,4 +32,18 @@ For every finding, provide:
 - A one- to two-sentence description
 - A suggested fix as a code block where applicable
 
+After listing all findings, add a final section titled "### Review Checklist" containing exactly this table, with each row Result filled in as Pass, Fail, or N/A based on the findings above - derive the answer directly from what you already found, do not re-analyze:
+
+| Check | Result |
+|---|---|
+| No Critical or High severity findings | |
+| No hardcoded secrets or credentials | |
+| No XSS or injection vulnerabilities | |
+| Error handling present for async/network calls | |
+| React hook dependency arrays correct | |
+| No direct DOM manipulation bypassing framework state | |
+| Naming and code clarity acceptable | |
+
+Mark a check Fail only if a finding above directly contradicts it. Mark N/A if the category does not apply to this diff (e.g. no hooks were touched).
+
 Output in clean, scannable Markdown. Reference exact files and lines. Be actionable and concise.
