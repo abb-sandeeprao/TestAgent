@@ -1,4 +1,4 @@
-name: Copilot CLI Automation
+﻿name: Copilot CLI Automation
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
@@ -17,14 +17,13 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4 
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install Copilot CLI  
+      - name: Install Copilot CLI
         run: npm i -g @github/copilot
 
-      # Generate a patch file containing only the PR code changes
       - name: Generate PR Diff
         id: diff
         run: |
@@ -34,49 +33,67 @@ jobs:
             git diff HEAD~1...HEAD > changes.patch
           fi
 
-      # Task 1: Generate the AI PR Code Review
       - name: Run Copilot PR Review
         env:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN || github.token }}
         run: |
           echo "## 🤖 Copilot AI Code Review" > copilot-review.md
           echo "" >> copilot-review.md
-          
-          # Force the CLI to render clean Markdown by explicitly asking it to drop block wrappers
+
+          BASE_REF="${{ github.base_ref }}"
+          BASE_REF="${BASE_REF:-main}"
+          REVIEW_INSTRUCTIONS=$(git show "origin/$BASE_REF:.github/review.md")
+
           copilot \
             --model gpt-5.6-luna \
-            -p "Provide only the code review and nothing else. Do not offer to do anything additional. Use the review-doc-organizer agent to perform a comprehensive code review focusing strictly on bugs, optimization, and security issues for the code changes inside changes.patch. Output the response in raw, clean, beautifully formatted Markdown without enclosing the entire response inside a giant markdown code block or quotes." \
+            -p "$REVIEW_INSTRUCTIONS
+
+          Apply the process above to the code changes in changes.patch. Provide only the review findings and nothing else. Do not offer to do anything additional. Output the response in raw, clean, beautifully formatted Markdown without enclosing the entire response inside a giant markdown code block or quotes." \
             -s --no-ask-user >> copilot-review.md
-        
-      # Task 2: Generate the AI Code Summary
+
       - name: Run Copilot AI Summarizer
         env:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN || github.token }}
         run: |
           echo "## 📝 Copilot AI Change Summary" > copilot-summary.md
           echo "" >> copilot-summary.md
-          
-          # Enforce pure markdown rules for the summarizer
+
           copilot \
             --model gpt-5.6-luna \
             -p "Provide only the changes summary and nothing else. Do not offer to do anything additional. Use the pr-change-summary skill to provide a high-level architectural and logical breakdown of the code changes provided inside changes.patch for human review. Output the response in clean, structural Markdown. Do not escape formatting or wrap the text in structural quotes." \
             -s --no-ask-user >> copilot-summary.md
 
-      # Step 3: Post the Review Comment to the PR safely
       - name: Post Review Comment
         if: ${{ github.event_name == 'pull_request' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
-          # Reading directly from the file via --body-file preserves raw markdown parsing without bash string escaping bugs
-          gh pr comment "$PR_NUMBER" --body-file="copilot-review.md"
+          COMMENT_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '[.[] | select(.body | startswith("## 🤖 Copilot AI Code Review"))] | last | .id')
 
-      # Step 4: Post the Summary Comment to the PR safely
+          if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "null" ]; then
+            gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -F body=@copilot-review.md
+          else
+            gh pr comment "$PR_NUMBER" --body-file="copilot-review.md"
+          fi
+
       - name: Post Summary Comment
         if: ${{ github.event_name == 'pull_request' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
-          gh pr comment "$PR_NUMBER" --body-file="copilot-summary.md"
+          COMMENT_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '[.[] | select(.body | startswith("## 📝 Copilot AI Change Summary"))] | last | .id')
+
+          if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "null" ]; then
+            gh api "repos/$REPO/issues/comments/$COMMENT_ID" -X PATCH -F body=@copilot-summary.md
+          else
+            gh pr comment "$PR_NUMBER" --body-file="copilot-summary.md"
+          fi
+
+
+
