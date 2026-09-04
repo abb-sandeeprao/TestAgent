@@ -1,0 +1,63 @@
+# AI PR Review — drop-in. Works in any Azure DevOps org.
+# Setup: create a pipeline from this file, then add it as a Required
+# build validation policy on your protected branches.
+
+parameters:
+  - name: parentBranch
+    displayName: "Parent branch (manual runs only; PR builds detect it)"
+    type: string
+    default: auto-parent
+  - name: createPullRequest
+    displayName: "Create a PR after review (manual runs only)"
+    type: boolean
+    default: false
+  - name: provider
+    displayName: "Model provider"
+    type: string
+    default: copilot
+    values: [copilot, github_models, anthropic, local]
+
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    fetchDepth: 0
+    persistCredentials: true
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: "3.12"
+
+  - ${{ if eq(parameters.provider, 'copilot') }}:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: "22.x"
+      - script: npm i -g @github/copilot
+        displayName: "Install Copilot CLI"
+
+  - bash: |
+      set -euo pipefail
+      if [ "$BUILD_REASON" = "PullRequest" ]; then
+        BASE="${SYSTEM_PULLREQUEST_TARGETBRANCH#refs/heads/}"
+      else
+        BASE="${{ parameters.parentBranch }}"
+      fi
+      ARGS=""
+      [ "${{ parameters.createPullRequest }}" = "True" ] && ARGS="--create-pr"
+      python .ai-review/ai-pr-review.pyz --target-branch "$BASE" $ARGS
+    displayName: "AI code review"
+    env:
+      REVIEW_PLATFORM: azure
+      MODEL_PROVIDER: ${{ parameters.provider }}
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      COPILOT_GITHUB_TOKEN: $(GITHUB_TOKEN)
+      GITHUB_MODELS_TOKEN: $(GITHUB_MODELS_TOKEN)
+      ANTHROPIC_API_KEY: $(ANTHROPIC_API_KEY)
+
+  - publish: pr_review_output.md
+    artifact: ai-pr-review-report
+    condition: always()
+    continueOnError: true
