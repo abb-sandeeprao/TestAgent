@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FabricJS Canvas Application</title>
@@ -96,6 +96,15 @@
             background-color: #218838;
         }
 
+        button.active {
+            background-color: #6c757d;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        button.active:hover {
+            background-color: #5a6268;
+        }
+
         input[type="color"] {
             width: 50px;
             height: 35px;
@@ -149,6 +158,8 @@
                 <button id="addCircle">Add Circle</button>
                 <button id="addTriangle">Add Triangle</button>
                 <button id="addLine">Add Line</button>
+                <button id="addBezier">Add Bezier</button>
+                <button id="drawBezier">Draw Bezier</button>
             </div>
 
             <!-- Color Controls -->
@@ -185,7 +196,8 @@
         <div class="info">
             <strong>Features:</strong>
             <ul style="margin-left: 20px; margin-top: 10px;">
-                <li>Create shapes: Rectangle, Circle, Triangle, and Line</li>
+                <li>Create shapes: Rectangle, Circle, Triangle, Line, and Bézier Curve</li>
+                <li>Draw custom Bézier curves interactively: click "Draw Bezier", click the start point, then click the end point</li>
                 <li>Customize fill and stroke colors</li>
                 <li>Adjust stroke width</li>
                 <li>Move, resize, and rotate shapes using native FabricJS controls</li>
@@ -233,6 +245,7 @@
 
         // Add Rectangle
         document.getElementById('addRect').addEventListener('click', () => {
+            exitBezierDrawMode();
             const styles = getCurrentStyles();
             const rect = new fabric.Rect({
                 left: 100,
@@ -248,6 +261,7 @@
 
         // Add Circle
         document.getElementById('addCircle').addEventListener('click', () => {
+            exitBezierDrawMode();
             const styles = getCurrentStyles();
             const circle = new fabric.Circle({
                 left: 150,
@@ -262,6 +276,7 @@
 
         // Add Triangle
         document.getElementById('addTriangle').addEventListener('click', () => {
+            exitBezierDrawMode();
             const styles = getCurrentStyles();
             const triangle = new fabric.Triangle({
                 left: 200,
@@ -277,6 +292,7 @@
 
         // Add Line
         document.getElementById('addLine').addEventListener('click', () => {
+            exitBezierDrawMode();
             const styles = getCurrentStyles();
             const line = new fabric.Line([50, 50, 200, 150], {
                 ...styles,
@@ -286,6 +302,130 @@
             canvas.setActiveObject(line);
             canvas.renderAll();
         });
+
+        // ---------- Bezier Curve Support ----------
+
+        // State for interactive bezier drawing mode
+        let bezierDrawMode = false;
+        let bezierStartPoint = null;
+        let bezierPreview = null;
+
+        // Exit interactive bezier drawing mode and restore canvas state
+        function exitBezierDrawMode() {
+            if (!bezierDrawMode) return;
+            bezierDrawMode = false;
+            bezierStartPoint = null;
+            if (bezierPreview) {
+                canvas.remove(bezierPreview);
+                bezierPreview = null;
+            }
+            canvas.defaultCursor = 'default';
+            canvas.selection = true;
+            canvas.forEachObject(obj => { obj.selectable = true; obj.evented = true; });
+            canvas.off('mouse:move', onBezierMouseMove);
+            canvas.off('mouse:down', onBezierMouseDown);
+            document.getElementById('drawBezier').textContent = 'Draw Bezier';
+            document.getElementById('drawBezier').classList.remove('active');
+            canvas.renderAll();
+        }
+
+        // Compute cubic bezier control points that form a smooth arc above the chord
+        const BEZIER_CURVE_HEIGHT_OFFSET = 80;
+
+        function computeControlPoints(s, e) {
+            const dx = e.x - s.x;
+            const dy = e.y - s.y;
+            return {
+                cp1x: s.x + dx * 0.25,
+                cp1y: s.y + dy * 0.25 - BEZIER_CURVE_HEIGHT_OFFSET,
+                cp2x: s.x + dx * 0.75,
+                cp2y: s.y + dy * 0.75 - BEZIER_CURVE_HEIGHT_OFFSET
+            };
+        }
+
+        // Update the dashed preview path while the mouse moves in draw mode
+        function onBezierMouseMove(opt) {
+            if (!bezierStartPoint) return;
+            const pointer = canvas.getPointer(opt.e);
+            const { cp1x, cp1y, cp2x, cp2y } = computeControlPoints(bezierStartPoint, pointer);
+            const pathData = `M ${bezierStartPoint.x} ${bezierStartPoint.y} C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${pointer.x} ${pointer.y}`;
+            if (bezierPreview) canvas.remove(bezierPreview);
+            const styles = getCurrentStyles();
+            bezierPreview = new fabric.Path(pathData, {
+                stroke: styles.stroke,
+                strokeWidth: styles.strokeWidth,
+                fill: '',
+                selectable: false,
+                evented: false,
+                strokeDashArray: [5, 5]
+            });
+            canvas.add(bezierPreview);
+            canvas.renderAll();
+        }
+
+        // Handle canvas clicks while in bezier draw mode
+        function onBezierMouseDown(opt) {
+            const pointer = canvas.getPointer(opt.e);
+            if (!bezierStartPoint) {
+                // First click: record start point
+                bezierStartPoint = { x: pointer.x, y: pointer.y };
+            } else {
+                // Second click: finalize the curve
+                const s = bezierStartPoint;
+                const e = pointer;
+                const { cp1x, cp1y, cp2x, cp2y } = computeControlPoints(s, e);
+                if (bezierPreview) {
+                    canvas.remove(bezierPreview);
+                    bezierPreview = null;
+                }
+                const styles = getCurrentStyles();
+                const pathData = `M ${s.x} ${s.y} C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${e.x} ${e.y}`;
+                const bezier = new fabric.Path(pathData, {
+                    ...styles,
+                    fill: ''
+                });
+                canvas.add(bezier);
+                canvas.setActiveObject(bezier);
+                exitBezierDrawMode();
+            }
+        }
+
+        // Add Bezier Curve (pre-defined S-shaped cubic bezier)
+        document.getElementById('addBezier').addEventListener('click', () => {
+            exitBezierDrawMode();
+            const styles = getCurrentStyles();
+            const bezier = new fabric.Path('M 100 300 C 150 100 350 100 400 300', {
+                ...styles,
+                fill: ''
+            });
+            canvas.add(bezier);
+            canvas.setActiveObject(bezier);
+            canvas.renderAll();
+        });
+
+        // Toggle interactive bezier drawing mode
+        document.getElementById('drawBezier').addEventListener('click', () => {
+            if (bezierDrawMode) {
+                exitBezierDrawMode();
+            } else {
+                bezierDrawMode = true;
+                bezierStartPoint = null;
+                canvas.defaultCursor = 'crosshair';
+                canvas.selection = false;
+                canvas.forEachObject(obj => { obj.selectable = false; obj.evented = false; });
+                canvas.on('mouse:move', onBezierMouseMove);
+                canvas.on('mouse:down', onBezierMouseDown);
+                document.getElementById('drawBezier').textContent = 'Cancel Drawing';
+                document.getElementById('drawBezier').classList.add('active');
+            }
+        });
+
+        // Press Escape to cancel bezier drawing mode
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') exitBezierDrawMode();
+        });
+
+        // ------------------------------------------
 
         // Delete Selected Object
         document.getElementById('deleteSelected').addEventListener('click', () => {
