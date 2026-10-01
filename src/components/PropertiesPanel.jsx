@@ -171,6 +171,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
               id="property-left"
               type="number"
               min="0"
+              step="any"
               value={positionDrafts.left}
               onChange={(event) => updatePosition('left', event)}
               onFocus={() => focusedPositionFields.current.add('left')}
@@ -186,6 +187,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
               id="property-top"
               type="number"
               min="0"
+              step="any"
               value={positionDrafts.top}
               onChange={(event) => updatePosition('top', event)}
               onFocus={() => focusedPositionFields.current.add('top')}

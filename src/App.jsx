@@ -29,12 +29,13 @@ function App() {
 
   const updateElement = (id, updates) => {
     const { style: styleUpdates, ...otherUpdates } = updates
+    const hasStyleUpdates = styleUpdates && Object.keys(styleUpdates).length > 0
     setElements(currentElements => currentElements.map(el =>
       el.id === id
         ? {
             ...el,
             ...otherUpdates,
-            ...(styleUpdates ? { style: { ...el.style, ...styleUpdates } } : {})
+            ...(hasStyleUpdates ? { style: { ...el.style, ...styleUpdates } } : {})
           }
         : el
     ))
