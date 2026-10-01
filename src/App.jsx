@@ -26,7 +26,13 @@ function App() {
 
   const updateElement = (id, updates) => {
     setElements(currentElements => currentElements.map(el =>
-      el.id === id ? { ...el, ...updates } : el
+      el.id === id
+        ? {
+            ...el,
+            ...updates,
+            ...(updates.style ? { style: { ...el.style, ...updates.style } } : {})
+          }
+        : el
     ))
   }
 

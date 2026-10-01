@@ -91,7 +91,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
           size="small"
           ref={toggleRef}
           aria-expanded={isOpen}
-          aria-controls="properties-popover"
+          aria-controls={isOpen ? 'properties-popover' : undefined}
           onClick={() => setIsOpen(open => !open)}
         >
           {isOpen ? 'Hide' : 'Edit'}
