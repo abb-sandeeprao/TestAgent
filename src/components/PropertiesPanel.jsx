@@ -56,7 +56,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
       ...currentDrafts,
       [property]: rawValue
     }))
-    if (rawValue === '') {
+    if (rawValue.trim() === '') {
       return
     }
 
@@ -71,19 +71,21 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
   }
 
   const restorePosition = (property) => {
-    const rawValue = positionDrafts[property]
-    const numericValue = Number(rawValue)
-    if (Number.isFinite(numericValue) && numericValue >= 0) {
-      onUpdateElement(element.id, {
-        style: {
-          [property]: numericValue
-        }
-      })
-      setPositionDrafts(currentDrafts => ({
-        ...currentDrafts,
-        [property]: String(numericValue)
-      }))
-      return
+    const rawValue = String(positionDrafts[property] ?? '').trim()
+    if (rawValue !== '') {
+      const numericValue = Number(rawValue)
+      if (Number.isFinite(numericValue) && numericValue >= 0) {
+        onUpdateElement(element.id, {
+          style: {
+            [property]: numericValue
+          }
+        })
+        setPositionDrafts(currentDrafts => ({
+          ...currentDrafts,
+          [property]: String(numericValue)
+        }))
+        return
+      }
     }
 
     setPositionDrafts(currentDrafts => ({
@@ -122,6 +124,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
           id="properties-popover"
           className="properties-popover"
           role="dialog"
+          tabIndex={-1}
           aria-modal="false"
           aria-label={`Edit ${element.type} properties`}
           onKeyDown={(event) => {
