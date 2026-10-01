@@ -51,10 +51,6 @@ const Editor = ({
     setDraggedId(null)
   }
 
-  const handleContentChange = (id, newContent) => {
-    onUpdateElement(id, { content: newContent })
-  }
-
   const handleInputChange = (e, id) => {
     // Support both synthetic events (e.target.value) and custom events (e.detail.value)
     const newContent = e.target.value !== undefined ? e.target.value : e.detail?.value

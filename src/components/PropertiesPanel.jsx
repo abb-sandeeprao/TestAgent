@@ -9,21 +9,25 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
     left: String(element?.style?.left ?? ''),
     top: String(element?.style?.top ?? '')
   }))
+  const positionDraftsRef = useRef(positionDrafts)
   const toggleRef = useRef(null)
   const firstInputRef = useRef(null)
   const focusedPositionFields = useRef(new Set())
 
-  useEffect(() => {
-    focusedPositionFields.current.clear()
-    setIsOpen(false)
-  }, [element?.id])
+  const updateDrafts = (updater) => {
+    const nextDrafts = typeof updater === 'function'
+      ? updater(positionDraftsRef.current)
+      : updater
+    positionDraftsRef.current = nextDrafts
+    setPositionDrafts(nextDrafts)
+  }
 
   useEffect(() => {
     if (!element) {
       return
     }
 
-    setPositionDrafts(currentDrafts => {
+    updateDrafts(currentDrafts => {
       const nextDrafts = { ...currentDrafts }
       for (const property of ['left', 'top']) {
         if (!focusedPositionFields.current.has(property)) {
@@ -55,7 +59,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
 
   const updatePosition = (property, event) => {
     const rawValue = String(readValue(event))
-    setPositionDrafts(currentDrafts => ({
+    updateDrafts(currentDrafts => ({
       ...currentDrafts,
       [property]: rawValue
     }))
@@ -74,7 +78,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
   }
 
   const restorePosition = (property) => {
-    const rawValue = String(positionDrafts[property] ?? '').trim()
+    const rawValue = String(positionDraftsRef.current[property] ?? '').trim()
     if (rawValue !== '') {
       const numericValue = Number(rawValue)
       if (Number.isFinite(numericValue) && numericValue >= 0) {
@@ -83,7 +87,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
             [property]: numericValue
           }
         })
-        setPositionDrafts(currentDrafts => ({
+        updateDrafts(currentDrafts => ({
           ...currentDrafts,
           [property]: String(numericValue)
         }))
@@ -91,7 +95,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
       }
     }
 
-    setPositionDrafts(currentDrafts => ({
+    updateDrafts(currentDrafts => ({
       ...currentDrafts,
       [property]: String(element.style?.[property] ?? '')
     }))
@@ -115,6 +119,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
           size="small"
           ref={toggleRef}
           aria-expanded={isOpen}
+          aria-haspopup="dialog"
           aria-controls={isOpen ? 'properties-popover' : undefined}
           onClick={() => setIsOpen(open => !open)}
         >
@@ -136,18 +141,20 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
             }
           }}
         >
-          <label className="property-field">
+          <label className="property-field" htmlFor="property-content">
             <span>Content</span>
             <input
+              id="property-content"
               ref={firstInputRef}
               type="text"
               value={element.content ?? ''}
               onChange={updateContent}
             />
           </label>
-          <label className="property-field">
+          <label className="property-field" htmlFor="property-left">
             <span>Left</span>
             <input
+              id="property-left"
               type="number"
               min="0"
               value={positionDrafts.left}
@@ -159,9 +166,10 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
               }}
             />
           </label>
-          <label className="property-field">
+          <label className="property-field" htmlFor="property-top">
             <span>Top</span>
             <input
+              id="property-top"
               type="number"
               min="0"
               value={positionDrafts.top}
