@@ -54,6 +54,7 @@ function App() {
         onSelectElement={setSelectedId}
       />
       <PropertiesPanel
+        key={selectedElement?.id ?? 'no-selection'}
         element={selectedElement}
         onUpdateElement={updateElement}
       />

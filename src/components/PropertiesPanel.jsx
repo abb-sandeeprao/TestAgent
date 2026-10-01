@@ -5,7 +5,10 @@ const readValue = (event) => event.detail?.value ?? event.target?.value ?? ''
 
 const PropertiesPanel = ({ element, onUpdateElement }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [positionDrafts, setPositionDrafts] = useState({ left: '', top: '' })
+  const [positionDrafts, setPositionDrafts] = useState(() => ({
+    left: String(element?.style?.left ?? ''),
+    top: String(element?.style?.top ?? '')
+  }))
   const toggleRef = useRef(null)
   const firstInputRef = useRef(null)
   const focusedPositionFields = useRef(new Set())

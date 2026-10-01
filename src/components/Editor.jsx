@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import './Editor.css'
 
 const Editor = ({
@@ -10,6 +10,7 @@ const Editor = ({
 }) => {
   const [draggedId, setDraggedId] = useState(null)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const editorRef = useRef(null)
 
   const handleMouseDown = (e, id) => {
     // Prevent dragging if clicking on delete button or any button within the element
@@ -62,6 +63,11 @@ const Editor = ({
     }
   }
 
+  const handleDelete = (id) => {
+    onDeleteElement(id)
+    requestAnimationFrame(() => editorRef.current?.focus())
+  }
+
   const renderElement = (element) => {
     const isSelected = selectedElementId === element.id
 
@@ -78,7 +84,7 @@ const Editor = ({
           size="extra-small"
           aria-label={`Delete ${element.type} element`}
           onMouseDown={(e) => e.stopPropagation()}
-          onClick={() => onDeleteElement(element.id)}
+          onClick={() => handleDelete(element.id)}
         >
           ×
         </apux-button>
@@ -108,6 +114,8 @@ const Editor = ({
   return (
     <div 
       className="editor"
+      ref={editorRef}
+      tabIndex={-1}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
