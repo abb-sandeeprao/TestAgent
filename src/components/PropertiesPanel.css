@@ -63,3 +63,9 @@
   font: inherit;
   font-weight: 400;
 }
+
+.property-field input:focus-visible {
+  outline: 2px solid #3498db;
+  outline-offset: 1px;
+  border-color: #3498db;
+}

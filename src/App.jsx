@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Toolbox from './components/Toolbox'
 import Editor from './components/Editor'
 import PropertiesPanel from './components/PropertiesPanel'
@@ -6,22 +6,24 @@ import './App.css'
 
 function App() {
   const [elements, setElements] = useState([])
-  const [nextId, setNextId] = useState(1)
+  const nextIdRef = useRef(1)
   const [selectedId, setSelectedId] = useState(null)
 
   const addElement = (type) => {
-    const newElement = {
-      id: `element-${nextId}`,
-      type: type,
-      content: `New ${type}`,
-      style: {
-        position: 'absolute',
-        left: 50,
-        top: 50 + (elements.length * 20),
+    const id = `element-${nextIdRef.current++}`
+    setElements(currentElements => [
+      ...currentElements,
+      {
+        id,
+        type,
+        content: `New ${type}`,
+        style: {
+          position: 'absolute',
+          left: 50,
+          top: 50 + (currentElements.length * 20),
+        }
       }
-    }
-    setElements([...elements, newElement])
-    setNextId(nextId + 1)
+    ])
   }
 
   const updateElement = (id, updates) => {
