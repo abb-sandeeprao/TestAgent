@@ -3,6 +3,15 @@ import './PropertiesPanel.css'
 
 const readValue = (event) => event.detail?.value ?? event.target?.value ?? ''
 
+const isInvalidPosition = (value) => {
+  const rawValue = String(value ?? '').trim()
+  if (rawValue === '') {
+    return false
+  }
+  const numericValue = Number(rawValue)
+  return !Number.isFinite(numericValue) || numericValue < 0
+}
+
 const PropertiesPanel = ({ element, onUpdateElement }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [positionDrafts, setPositionDrafts] = useState(() => ({
@@ -106,15 +115,6 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
         }))
         return
       }
-    }
-
-    const isInvalidPosition = (value) => {
-      const rawValue = String(value ?? '').trim()
-      if (rawValue === '') {
-        return false
-      }
-      const numericValue = Number(rawValue)
-      return !Number.isFinite(numericValue) || numericValue < 0
     }
 
     updateDrafts(currentDrafts => ({
