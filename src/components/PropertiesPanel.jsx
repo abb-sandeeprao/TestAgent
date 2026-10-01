@@ -8,18 +8,27 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
   const [positionDrafts, setPositionDrafts] = useState({ left: '', top: '' })
   const toggleRef = useRef(null)
   const firstInputRef = useRef(null)
+  const focusedPositionFields = useRef(new Set())
 
   useEffect(() => {
+    focusedPositionFields.current.clear()
     setIsOpen(false)
   }, [element?.id])
 
   useEffect(() => {
-    if (element) {
-      setPositionDrafts({
-        left: String(element.style?.left ?? ''),
-        top: String(element.style?.top ?? '')
-      })
+    if (!element) {
+      return
     }
+
+    setPositionDrafts(currentDrafts => {
+      const nextDrafts = { ...currentDrafts }
+      for (const property of ['left', 'top']) {
+        if (!focusedPositionFields.current.has(property)) {
+          nextDrafts[property] = String(element.style?.[property] ?? '')
+        }
+      }
+      return nextDrafts
+    })
   }, [element?.id, element?.style?.left, element?.style?.top])
 
   useEffect(() => {
@@ -55,7 +64,6 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
     if (Number.isFinite(numericValue) && numericValue >= 0) {
       onUpdateElement(element.id, {
         style: {
-          ...element.style,
           [property]: numericValue
         }
       })
@@ -65,12 +73,23 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
   const restorePosition = (property) => {
     const rawValue = positionDrafts[property]
     const numericValue = Number(rawValue)
-    if (rawValue === '' || !Number.isFinite(numericValue) || numericValue < 0) {
+    if (Number.isFinite(numericValue) && numericValue >= 0) {
+      onUpdateElement(element.id, {
+        style: {
+          [property]: numericValue
+        }
+      })
       setPositionDrafts(currentDrafts => ({
         ...currentDrafts,
-        [property]: String(element.style?.[property] ?? '')
+        [property]: String(numericValue)
       }))
+      return
     }
+
+    setPositionDrafts(currentDrafts => ({
+      ...currentDrafts,
+      [property]: String(element.style?.[property] ?? '')
+    }))
   }
 
   const closePopover = () => {
@@ -127,7 +146,11 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
               min="0"
               value={positionDrafts.left}
               onChange={(event) => updatePosition('left', event)}
-              onBlur={() => restorePosition('left')}
+              onFocus={() => focusedPositionFields.current.add('left')}
+              onBlur={() => {
+                focusedPositionFields.current.delete('left')
+                restorePosition('left')
+              }}
             />
           </label>
           <label className="property-field">
@@ -137,7 +160,11 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
               min="0"
               value={positionDrafts.top}
               onChange={(event) => updatePosition('top', event)}
-              onBlur={() => restorePosition('top')}
+              onFocus={() => focusedPositionFields.current.add('top')}
+              onBlur={() => {
+                focusedPositionFields.current.delete('top')
+                restorePosition('top')
+              }}
             />
           </label>
           <apux-button
