@@ -60,7 +60,7 @@ jobs:
           echo "" >> copilot-summary.md
 
           copilot \
-            --model gemini-3.8-flash \
+            --model gemini-3.7-flash \
             -p "Read changes.patch, .github/pr-summary-template.md, and .github/skills/pr-change-summary/SKILL.md before inference. Provide only a human-review PR summary based on the template and the actual diff. Use the pr-change-summary skill. Include Problem Statement, Summary of Changes, Design Approach, Areas of Interest, Critical Areas Requiring Careful Review, Validation, Assumptions Made, Problem Being Solved / Addressed, and Out of Scope / Not Addressed. Cite concrete changed files and lines where useful. Do not invent requirements, escape Markdown, wrap the response in a code block, or offer additional work." \
             -s --no-ask-user >> copilot-summary.md
 
