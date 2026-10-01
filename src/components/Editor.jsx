@@ -66,13 +66,27 @@ const Editor = ({
 
   const renderElement = (element) => {
     const isSelected = selectedElementId === element.id
+    const isKeyboardSelectable = element.type === 'image' || element.type === 'box'
 
     return (
       <div
         key={element.id}
         className={`editor-element ${isSelected ? 'selected' : ''}`}
         style={element.style}
+        tabIndex={isKeyboardSelectable ? 0 : -1}
+        role={isKeyboardSelectable ? 'button' : undefined}
+        aria-label={isKeyboardSelectable ? `${element.type} element: ${element.content}` : undefined}
         onMouseDown={(e) => handleMouseDown(e, element.id)}
+        onFocus={() => onSelectElement(element.id)}
+        onKeyDown={(e) => {
+          if (
+            e.target === e.currentTarget &&
+            (e.key === 'Enter' || e.key === ' ')
+          ) {
+            e.preventDefault()
+            onSelectElement(element.id)
+          }
+        }}
       >
         <apux-button 
           className="delete-btn"
