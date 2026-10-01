@@ -77,6 +77,7 @@ const Editor = ({
           variant="ghost"
           size="extra-small"
           aria-label={`Delete ${element.type} element`}
+          onMouseDown={(e) => e.stopPropagation()}
           onClick={() => onDeleteElement(element.id)}
         >
           ×

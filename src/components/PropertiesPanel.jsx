@@ -11,13 +11,16 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
 
   useEffect(() => {
     setIsOpen(false)
+  }, [element?.id])
+
+  useEffect(() => {
     if (element) {
       setPositionDrafts({
         left: String(element.style?.left ?? ''),
         top: String(element.style?.top ?? '')
       })
     }
-  }, [element?.id])
+  }, [element?.id, element?.style?.left, element?.style?.top])
 
   useEffect(() => {
     if (isOpen) {
