@@ -66,16 +66,15 @@ const Editor = ({
 
   const renderElement = (element) => {
     const isSelected = selectedElementId === element.id
-    const isKeyboardSelectable = element.type === 'image' || element.type === 'box'
 
     return (
       <div
         key={element.id}
         className={`editor-element ${isSelected ? 'selected' : ''}`}
         style={element.style}
-        tabIndex={isKeyboardSelectable ? 0 : -1}
-        role={isKeyboardSelectable ? 'button' : undefined}
-        aria-label={isKeyboardSelectable ? `${element.type} element: ${element.content}` : undefined}
+        tabIndex={0}
+        role="group"
+        aria-label={`${element.type} element: ${element.content}`}
         onMouseDown={(e) => handleMouseDown(e, element.id)}
         onFocus={() => onSelectElement(element.id)}
         onKeyDown={(e) => {
