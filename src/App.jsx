@@ -24,6 +24,7 @@ function App() {
         }
       }
     ])
+    setSelectedId(id)
   }
 
   const updateElement = (id, updates) => {

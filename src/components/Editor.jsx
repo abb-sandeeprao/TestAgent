@@ -89,6 +89,7 @@ const Editor = ({
             type="text"
             value={element.content}
             onInput={(e) => handleInputChange(e, element.id)}
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={(e) => e.stopPropagation()}
           />
         )}
@@ -120,7 +121,14 @@ const Editor = ({
         <h3>Editor Area</h3>
         <span className="element-count">{elements.length} element(s)</span>
       </div>
-      <div className="editor-canvas">
+      <div
+        className="editor-canvas"
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget) {
+            onSelectElement(null)
+          }
+        }}
+      >
         {elements.map(renderElement)}
       </div>
     </div>
