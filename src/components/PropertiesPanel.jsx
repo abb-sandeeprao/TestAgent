@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import './PropertiesPanel.css'
 
 const readValue = (event) => event.detail?.value ?? event.target?.value ?? ''
@@ -22,6 +22,20 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
     setPositionDrafts(nextDrafts)
   }
 
+  useLayoutEffect(() => {
+    focusedPositionFields.current.clear()
+    if (!element) {
+      setIsOpen(false)
+      return
+    }
+
+    updateDrafts({
+      ...positionDraftsRef.current,
+      left: String(element.style?.left ?? ''),
+      top: String(element.style?.top ?? '')
+    })
+  }, [element?.id])
+
   useEffect(() => {
     if (!element) {
       return
@@ -36,7 +50,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
       }
       return nextDrafts
     })
-  }, [element?.id, element?.style?.left, element?.style?.top])
+  }, [element?.style?.left, element?.style?.top])
 
   useEffect(() => {
     if (isOpen) {
