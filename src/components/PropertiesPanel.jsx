@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './PropertiesPanel.css'
 
 const readValue = (event) => event.detail?.value ?? event.target?.value ?? ''
@@ -10,6 +10,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
     top: String(element?.style?.top ?? '')
   }))
   const positionDraftsRef = useRef(positionDrafts)
+  const previousElementId = useRef(element?.id)
   const toggleRef = useRef(null)
   const firstInputRef = useRef(null)
   const focusedPositionFields = useRef(new Set())
@@ -22,35 +23,33 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
     setPositionDrafts(nextDrafts)
   }
 
-  useLayoutEffect(() => {
-    focusedPositionFields.current.clear()
-    if (!element) {
-      setIsOpen(false)
-      return
+  useEffect(() => {
+    const selectionChanged = previousElementId.current !== element?.id
+    if (selectionChanged) {
+      focusedPositionFields.current.clear()
     }
 
-    updateDrafts({
-      ...positionDraftsRef.current,
-      left: String(element.style?.left ?? ''),
-      top: String(element.style?.top ?? '')
-    })
-  }, [element?.id])
-
-  useEffect(() => {
     if (!element) {
+      previousElementId.current = undefined
+      setIsOpen(false)
       return
     }
 
     updateDrafts(currentDrafts => {
       const nextDrafts = { ...currentDrafts }
       for (const property of ['left', 'top']) {
-        if (!focusedPositionFields.current.has(property)) {
+        if (
+          selectionChanged ||
+          !focusedPositionFields.current.has(property)
+        ) {
           nextDrafts[property] = String(element.style?.[property] ?? '')
         }
       }
       return nextDrafts
     })
-  }, [element?.style?.left, element?.style?.top])
+
+    previousElementId.current = element.id
+  }, [element?.id, element?.style?.left, element?.style?.top])
 
   useEffect(() => {
     if (isOpen) {
@@ -107,6 +106,15 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
         }))
         return
       }
+    }
+
+    const isInvalidPosition = (value) => {
+      const rawValue = String(value ?? '').trim()
+      if (rawValue === '') {
+        return false
+      }
+      const numericValue = Number(rawValue)
+      return !Number.isFinite(numericValue) || numericValue < 0
     }
 
     updateDrafts(currentDrafts => ({
@@ -172,6 +180,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
               type="number"
               min="0"
               step="any"
+              aria-invalid={isInvalidPosition(positionDrafts.left)}
               value={positionDrafts.left}
               onChange={(event) => updatePosition('left', event)}
               onFocus={() => focusedPositionFields.current.add('left')}
@@ -188,6 +197,7 @@ const PropertiesPanel = ({ element, onUpdateElement }) => {
               type="number"
               min="0"
               step="any"
+              aria-invalid={isInvalidPosition(positionDrafts.top)}
               value={positionDrafts.top}
               onChange={(event) => updatePosition('top', event)}
               onFocus={() => focusedPositionFields.current.add('top')}

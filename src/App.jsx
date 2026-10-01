@@ -29,7 +29,7 @@ function App() {
 
   const updateElement = (id, updates) => {
     const { style: styleUpdates, ...otherUpdates } = updates
-    const hasStyleUpdates = styleUpdates && Object.keys(styleUpdates).length > 0
+    const hasStyleUpdates = Boolean(styleUpdates && Object.keys(styleUpdates).length > 0)
     setElements(currentElements => currentElements.map(el =>
       el.id === id
         ? {

@@ -53,7 +53,7 @@ const Editor = ({
 
   const handleInputChange = (e, id) => {
     // Support both synthetic events (e.target.value) and custom events (e.detail.value)
-    const newContent = e.target.value !== undefined ? e.target.value : e.detail?.value
+    const newContent = e.detail?.value ?? e.target?.value
     if (newContent !== undefined) {
       onUpdateElement(id, { content: newContent })
     }
@@ -84,6 +84,12 @@ const Editor = ({
           ) {
             e.preventDefault()
             onSelectElement(element.id)
+          } else if (
+            e.target === e.currentTarget &&
+            (e.key === 'Delete' || e.key === 'Backspace')
+          ) {
+            e.preventDefault()
+            handleDelete(element.id)
           }
         }}
       >
