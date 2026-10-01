@@ -1,0 +1,21 @@
+[jeeves]
+model = "gemini-3.8-flash"
+platform = "github"
+root = "."
+max_diff_bytes = 524288
+
+[context_engine]
+mode = "embedded"
+state_dir = ".jeeves"
+index_db = ".jeeves/context-index.db"
+token_budget = 3000
+max_files = 2000
+
+[checklist]
+enabled = true
+path = "docs/review-checklist.md"
+max_items = 80
+
+[security]
+redact_secrets = true
+enable_strix = false

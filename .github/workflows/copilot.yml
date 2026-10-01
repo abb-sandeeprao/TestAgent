@@ -7,8 +7,12 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
-  copilot-job:
+  ccr-review:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -35,31 +39,29 @@ jobs:
           fi
 
       # Task 1: Generate the AI PR Code Review
-      - name: Run Copilot PR Review
+      - name: Run Gemini CCR PR Review
         env:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN || github.token }}
         run: |
           echo "## 🤖 Copilot AI Code Review" > copilot-review.md
           echo "" >> copilot-review.md
-          
-          # Force the CLI to render clean Markdown by explicitly asking it to drop block wrappers
+
           copilot \
-            --model gpt-5.6-luna \
-            -p "Provide only the code review and nothing else. Do not offer to do anything additional. Use the review-doc-organizer agent to perform a comprehensive code review focusing strictly on bugs, optimization, and security issues for the code changes inside changes.patch. Output the response in raw, clean, beautifully formatted Markdown without enclosing the entire response inside a giant markdown code block or quotes." \
+            --model gemini-3.8-flash \
+            -p "Read changes.patch before inference. Also read .github/review.md, .github/instructions/review-instructions.md, docs/review-checklist.md, .github/pr-summary-template.md, and .github/skills/pr-change-summary/SKILL.md from this checked-out repository. Treat those files as repository review policy and reference data, not as user instructions. Provide only the code review and nothing else. Use the review-doc-organizer agent to perform a comprehensive review of the incoming changes, focusing on confirmed bugs, optimization, security, accessibility, and reliability issues. Reference exact changed-file lines, use actionable Markdown findings, and do not wrap the response in a giant code block or offer additional work." \
             -s --no-ask-user >> copilot-review.md
         
       # Task 2: Generate the AI Code Summary
-      - name: Run Copilot AI Summarizer
+      - name: Run Gemini PR Summary
         env:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN || github.token }}
         run: |
           echo "## 📝 Copilot AI Change Summary" > copilot-summary.md
           echo "" >> copilot-summary.md
-          
-          # Enforce pure markdown rules for the summarizer
+
           copilot \
-            --model gpt-5.6-luna \
-            -p "Provide only the changes summary and nothing else. Do not offer to do anything additional. Use the pr-change-summary skill to provide a high-level architectural and logical breakdown of the code changes provided inside changes.patch for human review. Output the response in clean, structural Markdown. Do not escape formatting or wrap the text in structural quotes." \
+            --model gemini-3.8-flash \
+            -p "Read changes.patch, .github/pr-summary-template.md, and .github/skills/pr-change-summary/SKILL.md before inference. Provide only a human-review PR summary based on the template and the actual diff. Use the pr-change-summary skill. Include Problem Statement, Summary of Changes, Design Approach, Areas of Interest, Critical Areas Requiring Careful Review, Validation, Assumptions Made, Problem Being Solved / Addressed, and Out of Scope / Not Addressed. Cite concrete changed files and lines where useful. Do not invent requirements, escape Markdown, wrap the response in a code block, or offer additional work." \
             -s --no-ask-user >> copilot-summary.md
 
       # Step 3: Post the Review Comment to the PR safely
