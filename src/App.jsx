@@ -32,9 +32,7 @@ function App() {
 
   const deleteElement = (id) => {
     setElements(currentElements => currentElements.filter(el => el.id !== id))
-    if (selectedId === id) {
-      setSelectedId(null)
-    }
+    setSelectedId(currentSelectedId => currentSelectedId === id ? null : currentSelectedId)
   }
 
   const selectedElement = elements.find(element => element.id === selectedId)

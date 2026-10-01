@@ -1,5 +1,5 @@
 [jeeves]
-model = "gemini-3.8-flash"
+model = "gemini-3.7-flash"
 platform = "github"
 root = "."
 max_diff_bytes = 524288
