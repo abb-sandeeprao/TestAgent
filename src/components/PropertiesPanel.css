@@ -1,0 +1,71 @@
+.properties-panel {
+  width: 280px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-left: 1px solid #dfe4e8;
+  color: #2c3e50;
+}
+
+.properties-panel h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.properties-panel p {
+  color: #7f8c8d;
+  line-height: 1.5;
+}
+
+.properties-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.properties-selection {
+  display: block;
+  margin-top: 4px;
+  color: #7f8c8d;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.properties-toggle,
+.properties-close {
+  flex-shrink: 0;
+}
+
+.properties-popover {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #fff;
+  border: 1px solid #dfe4e8;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.12);
+}
+
+.property-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.property-field input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font: inherit;
+  font-weight: 400;
+}
+
+.property-field input:focus-visible {
+  outline: 2px solid #3498db;
+  outline-offset: 1px;
+  border-color: #3498db;
+}

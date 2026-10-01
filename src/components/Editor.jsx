@@ -1,10 +1,16 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import './Editor.css'
 
-const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
-  const [selectedId, setSelectedId] = useState(null)
+const Editor = ({
+  elements,
+  onUpdateElement,
+  onDeleteElement,
+  selectedElementId,
+  onSelectElement
+}) => {
   const [draggedId, setDraggedId] = useState(null)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const editorRef = useRef(null)
 
   const handleMouseDown = (e, id) => {
     // Prevent dragging if clicking on delete button or any button within the element
@@ -16,7 +22,7 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
     if (!element) return
 
     setDraggedId(id)
-    setSelectedId(id)
+    onSelectElement(id)
     
     const rect = e.currentTarget.getBoundingClientRect()
     setDragOffset({
@@ -45,33 +51,55 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
     setDraggedId(null)
   }
 
-  const handleContentChange = (id, newContent) => {
-    onUpdateElement(id, { content: newContent })
-  }
-
   const handleInputChange = (e, id) => {
     // Support both synthetic events (e.target.value) and custom events (e.detail.value)
-    const newContent = e.target.value !== undefined ? e.target.value : e.detail?.value
+    const newContent = e.detail?.value ?? e.target?.value
     if (newContent !== undefined) {
       onUpdateElement(id, { content: newContent })
     }
   }
 
+  const handleDelete = (id) => {
+    onDeleteElement(id)
+    requestAnimationFrame(() => editorRef.current?.focus())
+  }
+
   const renderElement = (element) => {
-    const isSelected = selectedId === element.id
+    const isSelected = selectedElementId === element.id
 
     return (
       <div
         key={element.id}
         className={`editor-element ${isSelected ? 'selected' : ''}`}
         style={element.style}
+        tabIndex={0}
+        role="group"
+        aria-label={`${element.type} element: ${element.content}`}
         onMouseDown={(e) => handleMouseDown(e, element.id)}
+        onFocus={() => onSelectElement(element.id)}
+        onKeyDown={(e) => {
+          if (
+            e.target === e.currentTarget &&
+            (e.key === 'Enter' || e.key === ' ')
+          ) {
+            e.preventDefault()
+            onSelectElement(element.id)
+          } else if (
+            e.target === e.currentTarget &&
+            (e.key === 'Delete' || e.key === 'Backspace')
+          ) {
+            e.preventDefault()
+            handleDelete(element.id)
+          }
+        }}
       >
         <apux-button 
           className="delete-btn"
           variant="ghost"
           size="extra-small"
-          onClick={() => onDeleteElement(element.id)}
+          aria-label={`Delete ${element.type} element`}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={() => handleDelete(element.id)}
         >
           ×
         </apux-button>
@@ -80,6 +108,7 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
             type="text"
             value={element.content}
             onInput={(e) => handleInputChange(e, element.id)}
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={(e) => e.stopPropagation()}
           />
         )}
@@ -101,6 +130,8 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
   return (
     <div 
       className="editor"
+      ref={editorRef}
+      tabIndex={-1}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
@@ -109,7 +140,14 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
         <h3>Editor Area</h3>
         <span className="element-count">{elements.length} element(s)</span>
       </div>
-      <div className="editor-canvas">
+      <div
+        className="editor-canvas"
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget) {
+            onSelectElement(null)
+          }
+        }}
+      >
         {elements.map(renderElement)}
       </div>
     </div>
