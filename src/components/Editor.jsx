@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
 import './Editor.css'
 
-const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
-  const [selectedId, setSelectedId] = useState(null)
+const Editor = ({
+  elements,
+  onUpdateElement,
+  onDeleteElement,
+  selectedElementId,
+  onSelectElement
+}) => {
   const [draggedId, setDraggedId] = useState(null)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
@@ -16,7 +21,7 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
     if (!element) return
 
     setDraggedId(id)
-    setSelectedId(id)
+    onSelectElement(id)
     
     const rect = e.currentTarget.getBoundingClientRect()
     setDragOffset({
@@ -58,7 +63,7 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
   }
 
   const renderElement = (element) => {
-    const isSelected = selectedId === element.id
+    const isSelected = selectedElementId === element.id
 
     return (
       <div
@@ -71,6 +76,7 @@ const Editor = ({ elements, onUpdateElement, onDeleteElement }) => {
           className="delete-btn"
           variant="ghost"
           size="extra-small"
+          aria-label={`Delete ${element.type} element`}
           onClick={() => onDeleteElement(element.id)}
         >
           ×

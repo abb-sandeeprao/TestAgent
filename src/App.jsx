@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import Toolbox from './components/Toolbox'
 import Editor from './components/Editor'
+import PropertiesPanel from './components/PropertiesPanel'
 import './App.css'
 
 function App() {
   const [elements, setElements] = useState([])
   const [nextId, setNextId] = useState(1)
+  const [selectedId, setSelectedId] = useState(null)
 
   const addElement = (type) => {
     const newElement = {
@@ -23,14 +25,19 @@ function App() {
   }
 
   const updateElement = (id, updates) => {
-    setElements(elements.map(el => 
+    setElements(currentElements => currentElements.map(el =>
       el.id === id ? { ...el, ...updates } : el
     ))
   }
 
   const deleteElement = (id) => {
-    setElements(elements.filter(el => el.id !== id))
+    setElements(currentElements => currentElements.filter(el => el.id !== id))
+    if (selectedId === id) {
+      setSelectedId(null)
+    }
   }
+
+  const selectedElement = elements.find(element => element.id === selectedId)
 
   return (
     <div className="app">
@@ -39,6 +46,12 @@ function App() {
         elements={elements}
         onUpdateElement={updateElement}
         onDeleteElement={deleteElement}
+        selectedElementId={selectedId}
+        onSelectElement={setSelectedId}
+      />
+      <PropertiesPanel
+        element={selectedElement}
+        onUpdateElement={updateElement}
       />
     </div>
   )
